@@ -16,7 +16,7 @@ let producto = {
 };
 
 console.log(producto.nombre);
-console.log(producto.apellido);
+console.log(producto.apellido); // Si fuera bracket notation sería console.log(producto('nombre'));
 
 // El valor de una propiedad puede ser una función, en cuyo caso la propiedad es conocida como un método.
 let tenista = {

@@ -1,96 +1,57 @@
+let products = require("../utils/mock");
 const express = require("express");
+
 const router = express.Router();
-let brandsDB = require("../utils/products");
-const {user,auth} = require("../middleware/admin");
 
-/************************************************************* 
-	GET
-http://localhost:3000/api/product/Logitech/1
- ************************************************************/
+// 1. Retornar todos los productos del array. “/api/products”,
 
+router.get('/products', (req, res) => {
+    res.json(products);
+});
 
+//2. Obtener un producto específico mediante su ID “/api/products/:id”
+router.get("/products/:id", (req, res) => {
+    const { id } = req.params;
+    const results = products.find((product) => product.id === parseInt(id));
+    res.json([results]);
+});
 
-router.get("/product", (req, res) => {
+// router.get('/products/:id?', (req, res) =>{
+//      const {id} = req=params;
+//     // const id= req.params.id;S
+//     console.log('----> id',id);
+//     res.json(products.id);
+// });
+
+//3. Agregar un nuevo producto “/api/products”
+router.post('/products/add',(req,res) => {
+    const name = req.body.name;
+    const colors = req.body.colors;
+    const price = req.body.price;
+    const quantity = req.body.quantity;
+
+    const obj = {name, colors, price, quantity};
+    // console.log(obj);
+
+    products.push(obj)
+    res.send(`El producto ${name} se agregó.`)
 
 });
 
+//4. Cambiar alguna propiedad de un producto en particular ( Puede ser name, price, quantity o el que desees ) “/api/products/:id”,
 
-/**
-middleware a nivel de rutas: 
-definimos una ruta, y le podemos pasar diferente middleares,
-en este caso utilizamos las dos funciones que definimos en el archivo
-"../middleware/admin"
+router.put("/products/:id/:name", (req, res) => {
+    const { id, name } = req.params;
+    const result = products.find((product) => product.id === parseInt(id));
+    result.name = name;
+    res.send(result);
+  });
 
- */
-// esto no tiene test
-router.get("/user",user,auth,(req,res)=>{
-
-})
-
-
-
-router.get("/product", (req, res) => {
-	res.json(brandsDB);
+//5. Eliminar un producto mediante su ID “/api/products/:id”,
+router.delete("/products/:id", (req, res) => {
+    const { id } = req.params;
+    const result = products.map((product) => product.id === parseInt(id));
+    res.send(result);
 });
 
-
-
-// Si se encuenta el producto,devuelve un objeto con:
-//brand , el nombre de la marca
-//description, la descripcion de la marca
-//product, el producto entero que corresponde a esa marca
-router.get("/product/:brand/:productId?", (req, res) => {
-
-});
-
-/**
-POST
-
-http://localhost:3000/api/product
- */
-/**
- * El metodo post debe poder agregar un nuevo objeto
- *  con los atributos id,name,description
- * 	al agregarlos, debe responder con un objeto
- *  que contenga los atributos message : "Marca agregada"
- * 	y brand : <nombre de la marca agregada>
- * 	Ej: {message : "Marca agregada",brand: "Iphone"}
- * */
-
-router.post("/product", (req, res) => {
-
-});
-
-/**
-	PUT
-http://localhost:3000/api/product/2
- */
-/**
- * Este método deberia buscar el id pasado por params
- * dentro del array de productos y reemplazar el nombre
- * de la brand por el nombre que llega por body
- */
-router.put("/product/:id", (req, res) => {
-	
-});
-
-
-/**
-		DELETE
-http://localhost:3000/api/product/1
- */
-
-
-/**
- * Este método debe poder eliminar un producto
- */
-router.delete("/product/:id", (req, res) => {
-	
-
-});
-
-
-
-
-//expressjs.com/es/starter/hello-world.html
-module.exports = { router };
+module.exports = { router, products };
